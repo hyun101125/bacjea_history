@@ -1,0 +1,397 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Noto Sans KR', sans-serif;
+    background-color: #000; /* 검은색 배경으로 변경하여 회색 대신 검은색 표시 */
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.map-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    max-width: 100%;
+}
+
+/* 지도 헤더 (구글/네이버 맵 스타일) */
+.map-header {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.search-box {
+    display: flex;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    overflow: hidden;
+    pointer-events: auto;
+    flex: 1;
+    min-width: 0;
+}
+
+.search-box input {
+    flex: 1;
+    border: none;
+    padding: 12px 16px;
+    font-size: 14px;
+    outline: none;
+}
+
+.search-btn {
+    background: transparent;
+    border: none;
+    padding: 12px 16px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.map-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    pointer-events: auto;
+}
+
+.control-btn {
+    width: 36px;
+    height: 36px;
+    background: white;
+    border: none;
+    border-radius: 2px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.control-btn:hover {
+    background: #f5f5f5;
+}
+
+.control-btn:active {
+    background: #e0e0e0;
+}
+
+/* 메인 지도 영역 */
+.map-area {
+    flex: 1;
+    position: relative;
+    background: #e8eaed;
+    overflow: hidden;
+    cursor: default;
+    min-height: 0;
+    touch-action: none;
+}
+
+.map-area:active {
+    cursor: grabbing;
+}
+
+.map-image-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+#territory-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    user-select: none;
+    transition: transform 0.1s ease-out, opacity 0.3s ease;
+    touch-action: none;
+    pointer-events: auto;
+    opacity: 1;
+}
+
+.territory-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/* 타임라인 컨트롤 */
+.timeline-container {
+    position: relative;
+    background: white;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    padding: 15px;
+    z-index: 1000;
+    flex-shrink: 0;
+    max-height: 45vh;
+    overflow-y: auto;
+}
+
+.timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.timeline-header h2 {
+    font-size: 18px;
+    color: #333;
+}
+
+.year-display {
+    font-size: 20px;
+    font-weight: bold;
+    color: #1a73e8;
+}
+
+.timeline-slider-container {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.timeline-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #e0e0e0;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.timeline-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #1a73e8;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.timeline-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #1a73e8;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.timeline-marks {
+    position: relative;
+    margin-top: 10px;
+    font-size: 12px;
+    color: #666;
+    height: 22px;
+    transition: height 0.3s ease;
+}
+
+.timeline-mark {
+    position: absolute;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    top: 0;
+    height: 18px;
+    display: flex;
+    align-items: center;
+}
+
+.timeline-mark:hover {
+    background: #f0f0f0;
+}
+
+.timeline-info {
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.timeline-info h3 {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.timeline-info p {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.5;
+}
+/* 모바일 반응형 레이아웃 */
+@media (orientation: portrait) and (max-width: 768px) {
+    .map-container {
+        flex-direction: column;
+    }
+    
+    .map-area {
+        flex: 1;
+        order: 1;
+        position: relative;
+    }
+    
+    .timeline-container {
+        order: 2;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: auto;
+        background: transparent;
+        box-shadow: none;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        z-index: 500;
+        max-height: none;
+    }
+    
+    .timeline-header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 8px;
+    }
+    
+    .timeline-header h2 {
+        font-size: 14px;
+        width: auto;
+        margin: 0;
+        flex-shrink: 0;
+    }
+    
+    .year-display {
+        font-size: 16px;
+        width: auto;
+        font-weight: bold;
+        background: rgba(26, 115, 232, 0.9);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        flex-shrink: 0;
+    }
+    
+    .timeline-slider-container {
+        margin-bottom: 0;
+        height: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+    
+    .timeline-slider {
+        width: 100%;
+        height: 6px;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+    
+    .timeline-marks {
+        display: none;
+    }
+    
+    .timeline-mark {
+        display: none;
+    }
+    
+    .timeline-info {
+        display: block;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        background: white;
+        padding: 15px;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        border-radius: 12px 12px 0 0;
+        max-height: 35vh;
+        overflow-y: auto;
+        order: 3;
+        margin: 0;
+    }
+    
+    .timeline-info h3 {
+        font-size: 14px;
+        color: #333;
+        margin-bottom: 8px;
+        margin-top: 0;
+    }
+    
+    .timeline-info p {
+        font-size: 12px;
+        color: #666;
+        line-height: 1.5;
+        margin: 0;
+    }
+    
+    /* 세로 모드에서 이미지를 cover로 전체 채우기 */
+    #territory-image {
+        object-fit: cover;
+        object-position: center;
+    }
+}
+
+/* 모바일 모드 body 스타일 */
+@media (orientation: portrait) and (max-width: 768px) {
+    body {
+        padding-bottom: 35vh;
+    }
+}
+
+/* 가로 모드 - 원본 유지 */
+@media (orientation: landscape) {
+    .map-container {
+        flex-direction: column;
+    }
+    
+    .map-area {
+        flex: 1;
+    }
+    
+    .timeline-container {
+        max-height: 45vh;
+        overflow-y: auto;
+    }
+    
+    /* 가로 모드에서는 원본 사진 유지 */
+    #territory-image {
+        object-fit: cover;
+    }
+}

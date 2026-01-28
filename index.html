@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>백제 영토 변화 지도</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="map-container">
+        <!-- 지도 헤더 (구글/네이버 맵 스타일) -->
+        <div class="map-header">
+            <div class="map-controls">
+                <button class="control-btn" id="zoom-in">+</button>
+                <button class="control-btn" id="zoom-out">−</button>
+                <button class="control-btn" id="reset-view">⌂</button>
+            </div>
+        </div>
+
+        <!-- 메인 지도 영역 -->
+        <div class="map-area" id="map-area">
+            <div class="map-image-container" id="map-image-container">
+                <img id="territory-image" src="" alt="백제 영토" />
+                <svg class="territory-overlay" id="territory-overlay">
+                    <!-- 백제 영토가 여기에 그려집니다 -->
+                </svg>
+            </div>
+        </div>
+
+        <!-- 타임라인 컨트롤 -->
+        <div class="timeline-container">
+            <div class="timeline-header">
+                <h2>백제 영토 변화</h2>
+                <div class="year-display" id="year-display">0년</div>
+            </div>
+            <div class="timeline-slider-container">
+                <input type="range" id="timeline-slider" min="0" max="100" value="0" class="timeline-slider">
+                <div class="timeline-marks" id="timeline-marks">
+                    <!-- 동적으로 생성됨 -->
+                </div>
+            </div>
+            <div class="timeline-info" id="timeline-info">
+                <h3 id="period-title">초기 확장</h3>
+                <p id="period-description">한강 유역을 중심으로 영토를 확장하기 시작했습니다.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
