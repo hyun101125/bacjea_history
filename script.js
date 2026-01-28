@@ -242,8 +242,8 @@ function adjustZoomForMobilePortrait() {
         currentZoom = Math.max(zoomX, zoomY, 1);
         
         // 한반도 중심으로 시점 설정 (이미지 중앙보다 오른쪽으로 이동)
-        // 한반도가 서해 중심으로 나오는 것을 보정하기 위해 오른쪽으로 이동
-        currentPanX = 1200; // 오른쪽으로 1200px 이동 (한반도를 오른쪽으로)
+        // 모바일 세로 모드에서는 오른쪽으로 표시
+        currentPanX = -800; // 오른쪽으로 이동 (음수는 이미지를 왼쪽으로 이동)
         currentPanY = 0;
         
         console.log('Applied zoom and pan:', { currentZoom, currentPanX, currentPanY });
@@ -305,17 +305,18 @@ function loadTerritoryImage(imagePath) {
         return;
     }
     
-    territoryImage.style.display = 'block';
-    territoryImage.style.opacity = '0';
-    
+    // 새 이미지를 백그라운드에서 로드
     const img = new Image();
     img.onload = () => {
-        territoryImage.src = imagePath;
         // 이미지 원본 크기 저장
         territoryImageWidth = img.naturalWidth;
         territoryImageHeight = img.naturalHeight;
+        
+        // 새 이미지로 교체 (이미지가 완전히 로드된 후)
+        territoryImage.src = imagePath;
+        territoryImage.style.display = 'block';
         territoryImageLoaded = true;
-        territoryImage.style.opacity = '1';
+        
         // 영토 이미지 변환 동기화
         syncTerritoryImageTransform();
         updateMapBounds();
@@ -447,6 +448,19 @@ function scalePath(pathString, width, height) {
 // 타임라인 슬라이더 이벤트
 timelineSlider.addEventListener('input', handleTimelineSliderChange);
 
+// 모바일 슬라이더 터치 개선
+timelineSlider.addEventListener('touchstart', (e) => {
+    e.stopPropagation();
+}, false);
+
+timelineSlider.addEventListener('touchmove', (e) => {
+    e.stopPropagation();
+}, false);
+
+timelineSlider.addEventListener('touchend', (e) => {
+    e.stopPropagation();
+}, false);
+
 // 타임라인 마크 클릭 이벤트는 createTimelineMarks 함수 내부에서 처리됨
 
 // 마우스 위치 기준 줌 함수
@@ -509,6 +523,12 @@ resetViewBtn.addEventListener('click', () => {
     currentZoom = 1;
     currentPanX = 0;
     currentPanY = 0;
+    // 모바일인 경우 다시 위치 조정
+    const isPortrait = window.innerHeight > window.innerWidth;
+    const isMobile = window.innerWidth < 768;
+    if (isPortrait && isMobile) {
+        adjustZoomForMobilePortrait();
+    }
     applyTransform();
     updateTerritoryDisplay();
 });
@@ -639,8 +659,8 @@ mapArea.addEventListener('touchstart', (e) => {
         // 두 터치의 중점 계산
         touchCenterX = (touch1.clientX + touch2.clientX) / 2;
         touchCenterY = (touch1.clientY + touch2.clientY) / 2;
+        e.preventDefault();
     }
-    e.preventDefault();
 });
 
 mapArea.addEventListener('touchmove', (e) => {
